@@ -1,0 +1,88 @@
+version: 2.1
+
+orbs:
+  kubernetes: circleci/kubernetes@1.3.0
+
+jobs:
+    check-code:
+      docker:
+        - image: python:3.7.3-stretch
+      working_directory: ~/repo
+      steps:
+        - checkout
+        - run:
+            name: install Linter
+            command: |
+              make install
+        - run:
+            name: run lint to check Dockerfile
+            command: |         
+              make lint
+
+    create-docker:
+      docker:
+        - image:  circleci/golang:1.16
+      working_directory: ~/repo
+      steps:
+        - checkout
+        - setup_remote_docker:
+            version: 19.03.13
+        - run:
+            name: build and upload to docker hub
+            command: |
+              docker build --tag=$IMAGE_NAME .
+              docker images
+              docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+              docker tag $IMAGE_NAME $DOCKERHUB_USERNAME/$IMAGE_NAME
+              docker push $DOCKERHUB_USERNAME/$IMAGE_NAME
+
+    create-eks-cluster:
+      docker:
+        - image: python:3.7-alpine3.11
+      working_directory: ~/repo
+      steps:
+        - checkout
+        - run:
+            name: install eks
+            command: |
+              apk add --update tar gzip  curl
+              curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/v0.100.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
+              mv /tmp/eksctl /usr/local/bin
+        - run:
+            name: Create EKS Cluster
+            command: |
+              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
+    
+    deploy-eks-cluster:
+      docker:
+        - image: circleci/python:2.7.14
+          user: root
+      working_directory: ~/repo
+      steps:
+        - checkout
+        - setup_remote_docker:
+            docker_layer_caching: true
+        - run:
+            name: install kubectl tool and deploy the cluster
+            command: |
+              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+              install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+              kubectl version --client
+              # deploy cluster
+              docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME
+              kubectl apply -f eks-deployment.yaml
+              # echo the deploy status 
+              pods = kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
+              echo APP_POD: $pods
+
+workflows:
+  default:
+    jobs:
+      - check-code
+      - create-docker:
+          requires: [check-code]
+      - create-eks-cluster:
+          requires: [create-docker]
+      - deploy-eks-cluster:
+          requires: [create-eks-cluster]
+       
