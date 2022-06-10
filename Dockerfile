@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 EXPOSE 80
 
 # command to run on container start
-CMD [ "python", "app.py" ]
+CMD [ "python", "web.py" ]
