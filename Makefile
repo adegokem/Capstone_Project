@@ -7,6 +7,8 @@ install:
 	# This should be run from inside a virtualenv
 	pip3 install --upgrade pip && \
 	pip3 install -r requirements.txt
+	wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64 &&\
+	chmod +x ./hadolint
 
 lint:
 	# See local hadolint install instructions:   https://github.com/hadolint/hadolint
