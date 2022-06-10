@@ -30,7 +30,7 @@ jobs:
         - run:
             name: build/upload to dockerhub
             command: |
-              docker build -t=$IMAGE_NAME .
+              docker build -t:$IMAGE_NAME .
               docker images
               docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
               docker tag $IMAGE_NAME $DOCKERHUB_USERNAME/$IMAGE_NAME
