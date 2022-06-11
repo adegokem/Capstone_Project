@@ -1,16 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
-  name: udacity-capstone
+  name: capstone
+  region: us-west-2
   labels:
-    app: udacity-capstone
+    app: capstone
     type: restapi
   namespace: default
+
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: udacity-capstone
+      app: capstone
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -19,26 +22,39 @@ spec:
   template:
     metadata:
       labels:
-        name: udacity-capstone-template
+        name: capstone-project-template
     spec:
       containers:
         - image: adegokem/capstone:latest
           imagePullPolicy: Always
-          name: udacity-capstone
+          name: capstone-project
           ports:
             - containerPort: 80
+      nodeSelector:
+        kubernetes.io/os: linux
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - arm64
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: udacity-capstone-svc
+  name: capstone-svc
+  namaspace: capstone-svc
   labels:
-    app: udacity-capstone
+    app: capstone
 spec:
-  type: LoadBalancer
+  type: eks-deployment
   selector:
-    app: udacity-capstone
+    app: capstone
   ports:
     - port: 80
       targetPort: 80

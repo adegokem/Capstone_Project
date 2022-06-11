@@ -30,11 +30,7 @@ jobs:
         - run:
             name: build/upload to dockerhub
             command: |
-              docker build -t:$IMAGE_NAME .
-              docker images
-              docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
-              docker tag $IMAGE_NAME $DOCKERHUB_USERNAME/$IMAGE_NAME
-              docker push $DOCKERHUB_USERNAME/$IMAGE_NAME
+              ./upload_docker.sh ${DOCKER_USER} ${DOCKER_PASS} ${CIRCLE_WORKFLOW_ID:0:5}
 
     create-eks-cluster:
       docker:
@@ -51,7 +47,7 @@ jobs:
         - run:
             name: Create EKS Cluster
             command: |
-              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
+              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5} --region=us-west-2
     
     deploy-eks-cluster:
       docker:
@@ -65,12 +61,19 @@ jobs:
         - run:
             name: install kubectl tool and deploy the cluster
             command: |
+              sudo apt -y install tar gzip unzip curl
+              sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              sudo unzip awscliv2.zip
+              sudo ./aws/install
               curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
               install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
               kubectl version --client
               # deploy cluster
               docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME
-              kubectl apply -f eks-deployment.yaml
+              kubectl create namespace eks-deployment
+              kubectl apply -f deployment.yaml
+              kubectl get all -n eks-deployment
+              kubectl -n eks-deployment describe service eks-deployment
               # echo the deploy status 
               pods = kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
               echo APP_POD: $pods
