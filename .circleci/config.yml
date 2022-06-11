@@ -30,7 +30,7 @@ jobs:
         - run:
             name: build/upload to dockerhub
             command: |
-              sudo chmod +x
+              sudo chmod +x ./upload_docker.sh 
               ./upload_docker.sh ${DOCKER_USER} ${DOCKER_PASS} ${CIRCLE_WORKFLOW_ID:0:5}
 
     create-eks-cluster:
