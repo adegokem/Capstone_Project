@@ -5,7 +5,7 @@
 
 # Step 1:
 # Create dockerpath
-dockerpath=adegokem/capstone
+dockerpath=adegokem/flaskapp
 
 # Step 2:  
 # Authenticate & tag
