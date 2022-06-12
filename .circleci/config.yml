@@ -32,7 +32,6 @@ jobs:
         - run:
             name: build an image
             command: |
-              cd scripts/docker/
               sudo chmod +x run_docker.sh
               ./run_docker.sh ${DOCKER_USER} ${CIRCLE_WORKFLOW_ID:0:5}
         - run:
