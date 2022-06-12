@@ -34,12 +34,12 @@ jobs:
           command: |
             cd scripts/docker/
             sudo chmod +x run_docker.sh
-            ./build.sh
+            ./run_docker.sh ${DOCKER_USER} ${CIRCLE_WORKFLOW_ID:0:5}
         - run:
             name: build/upload to dockerhub
             command: |
               sudo chmod +x ./upload_docker.sh 
-              ./upload_docker.sh ${DOCKER_USER} ${DOCKER_PASS} ${CIRCLE_WORKFLOW_ID:0:5}
+              ./upload_docker.sh ${DOCKER_USER} ${CIRCLE_WORKFLOW_ID:0:5}
 
     create-eks-cluster:
       docker:
