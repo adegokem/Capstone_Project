@@ -25,9 +25,9 @@ spec:
         name: capstone-project-template
     spec:
       containers:
-        - image: adegokem/capstone:latest
+        - image: adegokem/capstone
           imagePullPolicy: Always
-          name: capstone-project
+          name: capstone
           ports:
             - containerPort: 80
       nodeSelector:

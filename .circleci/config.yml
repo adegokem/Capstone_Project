@@ -27,10 +27,15 @@ jobs:
       working_directory: ~/repo
       steps:
         - checkout
+        - run:
+          name: install dependencies
+          command: |
+            pip install awscli
         - setup_remote_docker:
             version: 20.10.14
+            docker_layer_caching: true
         - run:
-            name: build an image
+            name: build image
             command: |
               sudo chmod +x run_docker.sh
               ./run_docker.sh ${DOCKER_USER} ${CIRCLE_WORKFLOW_ID:0:5}
