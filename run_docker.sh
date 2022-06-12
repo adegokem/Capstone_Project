@@ -4,7 +4,7 @@
 
 # Step 1:
 # Build image and add a descriptive tag
-IMAGE=fastapi
+IMAGE=capstone
 
 docker build --tag=$IMAGE .
 
