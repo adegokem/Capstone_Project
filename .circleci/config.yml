@@ -43,7 +43,7 @@ jobs:
 
     create-eks-cluster:
       docker:
-        - image: python:3.7-alpine3.11
+        - image: python:3.9
       working_directory: ~/repo
       steps:
         - checkout
@@ -56,7 +56,7 @@ jobs:
         - run:
             name: Create EKS Cluster
             command: |
-              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5} --region=us-west-2
+              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5} 
     
     deploy-eks-cluster:
       docker:
@@ -74,31 +74,52 @@ jobs:
               sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
               sudo unzip awscliv2.zip
               sudo ./aws/install
-              curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+              echo "----------------------------------------install-awscli-------------------------------------"
+              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
               sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
               kubectl version --client
-        - run:
-            name: Deploy Cluster
-            command: |
+              echo "----------------------------------------install-kubectl-----------------------------------"
+              # deploy cluster
+              aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
               docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME
-              echo "----- IMAGE PULLED! ----"
+              echo "-------------------------------------pull-docker-update-config----------------------------"
+              # kubectl port-forward 8080:80
+              kubectl create namespace eks-deployment
               kubectl apply -f deployment.yaml
+              echo "---------------------------------------deploy-eks-to-cluster------------------------------"
               kubectl get all -n eks-deployment
               kubectl -n eks-deployment describe service eks-deployment
-              echo "--- CLUSTER DEPLOYED! ---"
-              # See the status
-              app_pod = kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
-              echo "APP_POD: "
-              echo $app_pod
+              echo "---------------------------------------------DONE-----------------------------------------"
+
+        #       sudo apt -y install tar gzip unzip curl
+        #       sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        #       sudo unzip awscliv2.zip
+        #       sudo ./aws/install
+        #       curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        #       sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+        #       kubectl version --client
+        # - run:
+        #     name: Deploy Cluster
+        #     command: |
+        #       docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME
+        #       echo "----- IMAGE PULLED! ----"
+        #       kubectl apply -f deployment.yaml
+        #       kubectl get all -n eks-deployment
+        #       kubectl -n eks-deployment describe service eks-deployment
+        #       echo "--- CLUSTER DEPLOYED! ---"
+        #       # See the status
+        #       app_pod = kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
+        #       echo "APP_POD: "
+        #       echo $app_pod
               
-              # aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
-              # kubectl create namespace eks-deployment
-              # kubectl apply -f deployment.yaml
-              # kubectl get all -n eks-deployment
-              # kubectl -n eks-deployment describe service eks-deployment
-              # # echo the deploy status 
-              # pods = kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
-              # echo APP_POD: $pods
+        #       # aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
+        #       # kubectl create namespace eks-deployment
+        #       # kubectl apply -f deployment.yaml
+        #       # kubectl get all -n eks-deployment
+        #       # kubectl -n eks-deployment describe service eks-deployment
+        #       # # echo the deploy status 
+        #       # pods = kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
+        #       # echo APP_POD: $pods
 
 workflows:
   default:
