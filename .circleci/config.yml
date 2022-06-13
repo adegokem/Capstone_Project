@@ -77,18 +77,28 @@ jobs:
               curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
               sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
               kubectl version --client
-              echo "------install-kubectl------"
-              aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
-              # deploy cluster
+        - run:
+            name: Deploy Cluster
+            command: |
               docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME
-              echo "<-- IMAGE PULLED! --> "
-              kubectl create namespace eks-deployment
+              echo "----- IMAGE PULLED! ----"
               kubectl apply -f deployment.yaml
               kubectl get all -n eks-deployment
               kubectl -n eks-deployment describe service eks-deployment
-              # echo the deploy status 
-              pods = kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
-              echo APP_POD: $pods
+              echo "--- CLUSTER DEPLOYED! ---"
+              # See the status
+              app_pod = kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
+              echo "APP_POD: "
+              echo $app_pod
+              
+              # aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
+              # kubectl create namespace eks-deployment
+              # kubectl apply -f deployment.yaml
+              # kubectl get all -n eks-deployment
+              # kubectl -n eks-deployment describe service eks-deployment
+              # # echo the deploy status 
+              # pods = kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
+              # echo APP_POD: $pods
 
 workflows:
   default:
