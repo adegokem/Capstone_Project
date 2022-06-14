@@ -6,7 +6,6 @@ metadata:
   region: us-west-2
   labels:
     app: capstone
-    type: restapi
   namespace: default
 
 spec:

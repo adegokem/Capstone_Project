@@ -60,7 +60,7 @@ jobs:
     
     deploy-eks-cluster:
       docker:
-        - image: circleci/python:3.9
+        - image: circleci/python:2.7.14
           user: root
       working_directory: ~/repo
       steps:
@@ -80,7 +80,7 @@ jobs:
               kubectl version --client
               echo "----------------------------------------install-kubectl-----------------------------------"
               # deploy cluster
-              aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
+              # aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
               docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME
               echo "-------------------------------------pull-docker-update-config----------------------------"
               # kubectl port-forward 8080:80
