@@ -78,7 +78,7 @@ jobs:
               # sudo ./aws/install
               echo "----install-awscli-------------------"
               curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-              sudo install -m 0755 kubectl /bin/kubectl
+              install -m 0755 kubectl /bin/kubectl
               kubectl version --client
               echo "-----install-kubectl------------------"
               # deploy cluster
