@@ -58,7 +58,7 @@ jobs:
         - run:
             name: Create EKS Cluster
             command: |
-              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5} --region us-west-2 --node-type t2.small --nodes-min 1 --nodes-max 2
+              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5} --node-type t2.small --nodes-min 1 --nodes-max 2
     
     deploy-eks-cluster:
       docker:
