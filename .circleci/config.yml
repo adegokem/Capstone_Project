@@ -62,7 +62,7 @@ jobs:
     
     deploy-eks-cluster:
       docker:
-        - image: circleci/python:2.7.14python:3.7-alpine3.11
+        - image: python:3.7-alpine3.11
           user: root
       working_directory: ~/repo
       steps:
