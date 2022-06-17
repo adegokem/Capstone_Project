@@ -2,6 +2,8 @@ version: 2.1
 
 orbs:
   kubernetes: circleci/kubernetes@1.3.0
+  aws-eks: circleci/aws-eks@2.2.0
+
 
 jobs:
     check-code:
@@ -56,11 +58,11 @@ jobs:
         - run:
             name: Create EKS Cluster
             command: |
-              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5} 
+              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5} --region us-west-2 --node-type t2.small --nodes 3 --nodes-min 1 --nodes-max 2
     
     deploy-eks-cluster:
       docker:
-        - image: circleci/python:2.7.14
+        - image: circleci/python:2.7.14python:3.7-alpine3.11
           user: root
       working_directory: ~/repo
       steps:
@@ -74,22 +76,22 @@ jobs:
               sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
               sudo unzip awscliv2.zip
               sudo ./aws/install
-              echo "----------------------------------------install-awscli-------------------------------------"
+              echo "----install-awscli-------------------"
               curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-              sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+              sudo install -m 0755 kubectl /bin/kubectl
               kubectl version --client
-              echo "----------------------------------------install-kubectl-----------------------------------"
+              echo "-----install-kubectl------------------"
               # deploy cluster
-              # aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
+              aws eks --region us-west-2 update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
               docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME
-              echo "-------------------------------------pull-docker-update-config----------------------------"
+              echo "----pull-docker-update-config----------"
               # kubectl port-forward 8080:80
               kubectl create namespace eks-deployment
               kubectl apply -f deployment.yaml
-              echo "---------------------------------------deploy-eks-to-cluster------------------------------"
+              echo "-----deploy-eks-to-cluster----------"
               kubectl get all -n eks-deployment
               kubectl -n eks-deployment describe service eks-deployment
-              echo "---------------------------------------------DONE-----------------------------------------"
+              echo "--------DONE-----------------------"
 
         #       sudo apt -y install tar gzip unzip curl
         #       sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"

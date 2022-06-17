@@ -13,6 +13,7 @@ echo "Docker ID and Image: $dockerpath"
 docker tag capstone $dockerpath
 #docker login --username=adegokem
 docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+docker tag capstone adegokem/capstone
 
 # Step 3:
 # Push image to a docker repository
