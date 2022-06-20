@@ -3,7 +3,6 @@ kind: Deployment
 
 metadata:
   name: capstone
-  region: us-west-2
   labels:
     app: capstone
   namespace: default
