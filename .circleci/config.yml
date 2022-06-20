@@ -70,7 +70,7 @@ jobs:
         - setup_remote_docker:
             docker_layer_caching: true
         - run:
-            name: install kubectl tool and deploy the cluster
+            name: install kubectl tools and deploy the cluster
             command: |
               curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
               install -m 0755 kubectl /bin/kubectl
