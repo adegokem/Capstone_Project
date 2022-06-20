@@ -5,6 +5,7 @@ metadata:
   name: capstone
   labels:
     app: capstone
+  namespace: default
 
 spec:
   replicas: 2
@@ -19,7 +20,7 @@ spec:
   template:
     metadata:
       labels:
-        name: capstone-project-template
+        app: capstone
     spec:
       containers:
         - image: adegokem/capstone
@@ -45,7 +46,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: capstone-svc
-  namaspace: capstone-svc
+  namespace: capstone-svc
   labels:
     app: capstone
 spec:
