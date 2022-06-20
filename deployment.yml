@@ -45,8 +45,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: capstone-svc
-  namespace: capstone-svc
+  name: capstone
+  namespace: capstone
   labels:
     app: capstone
 spec:
