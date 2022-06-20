@@ -80,7 +80,7 @@ jobs:
             command: |
               PROJECT=capstone
               IMAGE="adegokem/capstone"
-              aws eks --region us-west-2 update-kubeconfig --name capstone-cluster
+              aws eks --region us-west-2 update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
               aws sts get-caller-identity
               kubectl apply -f kubernetes/deployment-service.yml
               kubectl set image deployments/$PROJECT $PROJECT=$IMAGE:${CIRCLE_WORKFLOW_ID:0:5}
