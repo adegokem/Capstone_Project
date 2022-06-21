@@ -52,7 +52,7 @@ metadata:
   namespace: default
 
 spec:
-  type: eks-deployment
+  type: LoadBalancer
   selector:
     app: capstone
   ports:
