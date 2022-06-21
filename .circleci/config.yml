@@ -81,14 +81,15 @@ jobs:
               PROJECT=capstone
               IMAGE="adegokem/capstone"
               aws eks --region us-west-2 update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
+              docker pull $dockerpath
               aws sts get-caller-identity
+              kubectl create namespace eks-deployment
               kubectl apply -f deployment.yml
               kubectl set image deployments/$PROJECT $PROJECT=$IMAGE:${CIRCLE_WORKFLOW_ID:0:5}
               kubectl get nodes
               kubectl get pods
-              app_pod = kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
-              echo "APP_POD: "
-              echo $app_pod
+              kubectl get all -n eks-deployment
+              kubectl -n eks-deployment describe service eks-deployment
 
 workflows:
   default:
