@@ -87,8 +87,7 @@ jobs:
               kubectl set image deployments/$PROJECT $PROJECT=$IMAGE:${CIRCLE_WORKFLOW_ID:0:5}
               kubectl get nodes
               kubectl get pods
-              kubectl get all -n eks-deployment
-              kubectl -n eks-deployment describe service eks-deployment
+              
 
 workflows:
   default:
