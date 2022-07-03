@@ -58,11 +58,11 @@ jobs:
         - run:
             name: Create EKS Cluster
             command: |
-              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5} --node-type t2.small --nodes-min 1 --nodes-max 2
+              eksctl create cluster --name=EKSCluster-${CIRCLE_WORKFLOW_ID:0:5} 
     
     deploy-eks-cluster:
       docker:
-        - image: amazon/aws-cli
+        - image: circleci/python:2.7.14
           user: root
       working_directory: ~/repo
       steps:
@@ -72,6 +72,10 @@ jobs:
         - run:
             name: install kubectl tools and deploy the cluster
             command: |
+              sudo apt -y install tar gzip unzip curl
+              sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              sudo unzip awscliv2.zip
+              sudo ./aws/install
               curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
               install -m 0755 kubectl /bin/kubectl
               kubectl version --client
@@ -82,6 +86,7 @@ jobs:
               IMAGE="adegokem/capstone"
               aws eks --region us-west-2 update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
               aws sts get-caller-identity
+              docker pull $IMAGE
               kubectl create deployment capstone --image=$IMAGE
               kubectl create namespace eks-deployment
               kubectl apply -f deployment.yml
