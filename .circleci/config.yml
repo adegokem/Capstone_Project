@@ -87,7 +87,7 @@ jobs:
 
               aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
               docker pull $IMAGE
-              kubectl create namespace deployment
+              kubectl create namespace capstone
               kubectl apply -f deployment.yml
               kubectl get deploy
               kubectl get svc
