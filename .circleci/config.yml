@@ -84,18 +84,27 @@ jobs:
             command: |
               PROJECT=capstone
               IMAGE="adegokem/capstone"
-              aws eks --region us-west-2 update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
-              aws sts get-caller-identity
+
+              aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
               docker pull $IMAGE
-              kubectl create deployment capstone --image=$IMAGE
               kubectl create namespace capstone
-              kubectl apply -f deployment.yml
-              kubectl set image deployments/$PROJECT $PROJECT=$IMAGE:${CIRCLE_WORKFLOW_ID:0:5}
-              kubectl get nodes
-              kubectl get pods
-              kubectl config view
-              kubectl get all -n capstone
+              kubectl apply -f deployment.yaml
+              kubectl get all -n eks-deployment
               kubectl -n capstone describe service capstone
+
+
+              # aws eks --region us-west-2 update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
+              # aws sts get-caller-identity
+              # docker pull $IMAGE
+              # kubectl create deployment capstone --image=$IMAGE
+              # kubectl create namespace capstone
+              # kubectl apply -f deployment.yml
+              # kubectl set image deployments/$PROJECT $PROJECT=$IMAGE:${CIRCLE_WORKFLOW_ID:0:5}
+              # kubectl get nodes
+              # kubectl get pods
+              # kubectl config view
+              # kubectl get all -n capstone
+              # kubectl -n capstone describe service capstone
               
 
 workflows:
