@@ -100,7 +100,8 @@ jobs:
               docker pull $IMAGE
               kubectl create namespace capstone
               kubectl apply -f deployment.yml
-              kubectl set image deployments/$PROJECT $PROJECT=$IMAGE:${CIRCLE_WORKFLOW_ID:0:5}
+              kubectl get deploy
+              kubectl get svc
               kubectl get nodes
               kubectl get pods
               kubectl config view
