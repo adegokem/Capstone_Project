@@ -88,12 +88,14 @@ jobs:
               aws sts get-caller-identity
               docker pull $IMAGE
               kubectl create deployment capstone --image=$IMAGE
-              kubectl create namespace eks-deployment
+              kubectl create namespace capstone
               kubectl apply -f deployment.yml
               kubectl set image deployments/$PROJECT $PROJECT=$IMAGE:${CIRCLE_WORKFLOW_ID:0:5}
               kubectl get nodes
               kubectl get pods
               kubectl config view
+              kubectl get all -n capstone
+              kubectl -n capstone describe service capstone
               
 
 workflows:
