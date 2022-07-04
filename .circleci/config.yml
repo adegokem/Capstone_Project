@@ -89,6 +89,8 @@ jobs:
               docker pull $IMAGE
               kubectl create namespace deployment
               kubectl apply -f deployment.yml
+              kubectl get deploy
+              kubectl get svc
               kubectl get all -n capstone
               kubectl -n capstone describe service capstone
 
