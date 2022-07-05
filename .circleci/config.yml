@@ -80,22 +80,10 @@ jobs:
               install -m 0755 kubectl /bin/kubectl
               kubectl version --client
         - run:
-            name: Deploy Cluster
+            name: Pull Image and Deploy Cluster
             command: |
               PROJECT=capstone
               IMAGE="adegokem/capstone"
-
-              # aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
-              # docker pull $IMAGE
-              # kubectl create namespace capstone
-              # kubectl apply -f deployment.yml
-              # kubectl get deploy
-              # kubectl get svc
-              # kubectl get all -n capstone
-              # echo "------------"
-              # kubectl -n capstone describe service capstone
-
-
               aws eks update-kubeconfig --name EKSCluster-${CIRCLE_WORKFLOW_ID:0:5}
               docker pull $IMAGE
               kubectl create namespace capstone
